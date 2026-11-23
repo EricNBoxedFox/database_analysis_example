@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+secrets.env
+.ipynb_checkpoints/
+*.asc
+*.gpg
+*.pgp
+run_*.json
+outputs/*
+
+# Just my testing stagging area before implementing functions etc. 
+testing.ipynb
+
+# Allow example PGP keys for testing
+!encryption_keys/example_*_public.asc
+!encryption_keys/example_*_secret.asc
+
+# Allowing example outputs
+!example_outputs/*

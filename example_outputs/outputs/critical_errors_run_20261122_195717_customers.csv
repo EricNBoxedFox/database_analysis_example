@@ -1,0 +1,4 @@
+customer_id,full_name,email,phone,country,city,birth_date,signup_date,check_type,severity,reason
+66,,jennifer.irwin66@example.com,,France,Lyon,2000-09-18,2025-04-14,required,critical,full_name is required but empty
+217,Katherine Rocha,katherine.rocha217@example.com,+44 7700 900517,United Kingdom,Manchester,1959-06-13,1900-01-01,date_range,critical,signup_date (1900-01-01) is before minimum (2024-01-01)
+300,Robert Powell,robert.powell300@example.com,,Germany,,1971-05-06,2024-08-04,required,critical,city is required but empty

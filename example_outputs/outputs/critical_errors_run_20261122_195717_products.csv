@@ -1,0 +1,4 @@
+product_id,product_name,category,unit_price,stock_qty,check_type,severity,reason
+410,,Beauty,28.47,206,required,critical,product_name is required but empty
+597,Travel Resistance Bands,,54.3,123,required,critical,category is required but empty
+748,,Kitchen,41.71,25,required,critical,product_name is required but empty

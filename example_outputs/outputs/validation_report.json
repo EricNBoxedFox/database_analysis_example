@@ -1,0 +1,130 @@
+{
+  "run_id": "run_20261122_203803",
+  "task_name": "ecommerce_staging_validation",
+  "timestamp": "2026-11-22T20:39:09.924067",
+  "validation_summary": {
+    "customers": {
+      "total_rows": 303,
+      "critical_count": 3,
+      "warning_count": 1,
+      "info_count": 0,
+      "has_critical_errors": true
+    },
+    "products": {
+      "total_rows": 533,
+      "critical_count": 3,
+      "warning_count": 0,
+      "info_count": 0,
+      "has_critical_errors": true
+    },
+    "orders": {
+      "total_rows": 614,
+      "critical_count": 8,
+      "warning_count": 2,
+      "info_count": 0,
+      "has_critical_errors": true
+    },
+    "order_items": {
+      "total_rows": 999,
+      "critical_count": 0,
+      "warning_count": 14,
+      "info_count": 0,
+      "has_critical_errors": false
+    }
+  },
+  "table_operations": {
+    "customers": {
+      "status": "skipped",
+      "reason": "critical_validation_errors"
+    },
+    "products": {
+      "status": "skipped",
+      "reason": "critical_validation_errors"
+    },
+    "orders": {
+      "status": "skipped",
+      "reason": "critical_validation_errors"
+    },
+    "order_items": {
+      "status": "failed",
+      "reason": "FOREIGN KEY constraint failed"
+    }
+  },
+  "ai_findings": [
+    {
+      "finding_type": "data_quality",
+      "description": "Future signup dates detected - customers cannot sign up in the future (e.g., customer_id 6: 2026-03-26, customer_id 10: 2025-09-14). This indicates date entry errors or test data contamination.",
+      "severity": "critical",
+      "affected_columns": [
+        "signup_date"
+      ],
+      "confidence": "high"
+    },
+    {
+      "finding_type": "data_quality",
+      "description": "Email field contains placeholder text 'N/A' instead of valid email addresses or NULL values (customer_id 9). This will break email validation and communication workflows.",
+      "severity": "critical",
+      "affected_columns": [
+        "email"
+      ],
+      "confidence": "high"
+    },
+    {
+      "finding_type": "anomaly",
+      "description": "Product names contain nonsensical feature combinations that don't exist in reality (e.g., 'Wireless Pruning Shears', 'Wireless Door Mat'). These appear to be generated/test data with incorrect attribute-product pairings.",
+      "severity": "warning",
+      "affected_columns": [
+        "product_name"
+      ],
+      "confidence": "high"
+    },
+    {
+      "finding_type": "data_quality",
+      "description": "Missing birth_date values stored as empty strings instead of NULL for multiple customers (customer_id 3, 6). Inconsistent null representation complicates data processing.",
+      "severity": "warning",
+      "affected_columns": [
+        "birth_date"
+      ],
+      "confidence": "high"
+    },
+    {
+      "finding_type": "data_quality",
+      "description": "Missing phone numbers stored as empty strings for multiple customers (customer_id 4, 5, 8, 9). High rate of missing contact information may indicate incomplete data collection.",
+      "severity": "warning",
+      "affected_columns": [
+        "phone"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "finding_type": "pattern",
+      "description": "Inconsistent full_name formatting - some records include honorific prefixes (Mr., Mrs., MD) while others don't. This suggests mixed data sources or inconsistent entry standards.",
+      "severity": "info",
+      "affected_columns": [
+        "full_name"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "finding_type": "recommendation",
+      "description": "Consider implementing referential integrity checks between orders.customer_id and customers.customer_id, as the validation summary shows 8 critical errors in orders table - likely orphaned records or invalid customer references.",
+      "severity": "warning",
+      "affected_columns": [
+        "customer_id"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "finding_type": "recommendation",
+      "description": "The order_items table has 14 warnings but 0 critical errors - likely indicates calculation mismatches (line_total vs quantity * unit_price) or price inconsistencies with products table that should be validated.",
+      "severity": "warning",
+      "affected_columns": [
+        "quantity",
+        "unit_price",
+        "line_total"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,8 @@
+pandas
+numpy
+pydantic
+jupyter
+ipykernel
+python-dotenv
+openai
+PGPy

@@ -1,0 +1,9 @@
+order_id,customer_id,order_date,ship_date,status,order_total,country,check_type,severity,reason
+59,28,1900-01-01,2025-05-27,delivered,19.16,Australia,date_range,critical,order_date (1900-01-01) is before minimum (2024-01-01)
+197,92,2025-11-25,,delivered,11.39,Australia,cross_field,critical,status is 'delivered' but ship_date is empty
+219,103,2025-05-15,,delivered,323.66,United States,cross_field,critical,status is 'delivered' but ship_date is empty
+269,132,1900-01-01,,cancelled,562.53,United Kingdom,date_range,critical,order_date (1900-01-01) is before minimum (2024-01-01)
+363,179,2026-08-15,,delivered,13.2,France,cross_field,critical,status is 'delivered' but ship_date is empty
+406,200,2099-12-31,2026-02-08,delivered,138.55,United States,date_range,critical,order_date (2099-12-31) is after maximum (2026-09-30)
+432,213,2099-12-31,2025-11-27,delivered,213.93,Canada,date_range,critical,order_date (2099-12-31) is after maximum (2026-09-30)
+436,215,1900-01-01,2026-01-26,delivered,237.21,Sweden,date_range,critical,order_date (1900-01-01) is before minimum (2024-01-01)

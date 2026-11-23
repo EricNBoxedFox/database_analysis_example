@@ -1,0 +1,332 @@
+{
+  "tasks": [
+    {
+      "name": "ecommerce_staging_validation",
+      "database": {
+        "type": "sqlite",
+        "path": "test_dbs/ecomerce_full.db"
+      },
+      "reference_database": "test_dbs/example-clean-ecommerce.db",
+      "merge_order": [
+        "customers",
+        "products",
+        "orders",
+        "order_items"
+      ],
+      "db_type": "sqlite",
+      "tables": {
+        "customers": {
+          "staging_table": "stagging_customers",
+          "target_table": "customers",
+          "key_column": "customer_id",
+          "columns": [
+            "customer_id",
+            "full_name",
+            "email",
+            "phone",
+            "country",
+            "city",
+            "birth_date",
+            "signup_date"
+          ],
+          "checks": [
+            {
+              "type": "required",
+              "column": "customer_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "full_name",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "email",
+              "severity": "critical"
+            },
+            {
+              "type": "regex",
+              "function": "is_valid_email",
+              "column": "email",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "country",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "city",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "signup_date",
+              "severity": "critical"
+            },
+            {
+              "type": "date_range",
+              "column": "signup_date",
+              "min_date": "2024-01-01",
+              "max_date": "2026-09-30",
+              "severity": "critical"
+            },
+            {
+              "type": "date_range",
+              "column": "birth_date",
+              "min_date": "1900-01-01",
+              "max_date": "today",
+              "severity": "warning"
+            },
+            {
+              "type": "string_length",
+              "column": "full_name",
+              "min_length": 2,
+              "max_length": 120,
+              "severity": "warning"
+            },
+            {
+              "type": "cross_field",
+              "function": "end_date_after_start_date",
+              "columns": [
+                "birth_date",
+                "signup_date"
+              ],
+              "start_column": "birth_date",
+              "end_column": "signup_date",
+              "severity": "warning"
+            }
+          ],
+          "auto_fixes": [
+            "fix_placeholder_email",
+            "fix_placeholder_country",
+            "fix_sentinel_dates"
+          ]
+        },
+        "products": {
+          "staging_table": "stagging_products",
+          "target_table": "products",
+          "key_column": "product_id",
+          "columns": [
+            "product_id",
+            "product_name",
+            "category",
+            "unit_price",
+            "stock_qty"
+          ],
+          "checks": [
+            {
+              "type": "required",
+              "column": "product_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "product_name",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "category",
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "unit_price",
+              "min": 0,
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "stock_qty",
+              "min": 0,
+              "max": 500,
+              "severity": "warning"
+            },
+            {
+              "type": "format",
+              "function": "is_valid_currency",
+              "column": "unit_price",
+              "severity": "warning"
+            }
+          ],
+          "auto_fixes": [
+            "fix_unit_price_sign_flipped",
+            "fix_unit_price_tenfold",
+            "fix_stock_qty_sign_flipped",
+            "fix_stock_qty_tenfold"
+          ]
+        },
+        "orders": {
+          "staging_table": "stagging_orders",
+          "target_table": "orders",
+          "key_column": "order_id",
+          "columns": [
+            "order_id",
+            "customer_id",
+            "order_date",
+            "ship_date",
+            "status",
+            "order_total",
+            "country"
+          ],
+          "checks": [
+            {
+              "type": "required",
+              "column": "order_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "customer_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "order_date",
+              "severity": "critical"
+            },
+            {
+              "type": "enum",
+              "column": "status",
+              "allowed_values": [
+                "pending",
+                "shipped",
+                "delivered",
+                "cancelled"
+              ],
+              "severity": "critical"
+            },
+            {
+              "type": "date_range",
+              "column": "order_date",
+              "min_date": "2024-01-01",
+              "max_date": "2026-09-30",
+              "severity": "critical"
+            },
+            {
+              "type": "date_range",
+              "column": "ship_date",
+              "max_date": "2026-09-30",
+              "severity": "critical"
+            },
+            {
+              "type": "cross_field",
+              "function": "ship_date_after_order_date",
+              "columns": [
+                "order_date",
+                "ship_date"
+              ],
+              "severity": "warning"
+            },
+            {
+              "type": "cross_field",
+              "function": "delivered_requires_ship_date",
+              "columns": [
+                "status",
+                "ship_date"
+              ],
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "order_total",
+              "min": 0,
+              "severity": "critical"
+            }
+          ],
+          "auto_fixes": [
+            "fix_impossible_status_dates",
+            "fix_sentinel_order_dates"
+          ]
+        },
+        "order_items": {
+          "staging_table": "stagging_order_items",
+          "target_table": "order_items",
+          "key_column": "order_item_id",
+          "columns": [
+            "order_item_id",
+            "order_id",
+            "product_id",
+            "quantity",
+            "unit_price",
+            "line_total"
+          ],
+          "checks": [
+            {
+              "type": "required",
+              "column": "order_item_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "order_id",
+              "severity": "critical"
+            },
+            {
+              "type": "required",
+              "column": "product_id",
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "quantity",
+              "min": 1,
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "unit_price",
+              "min": 0,
+              "severity": "critical"
+            },
+            {
+              "type": "range",
+              "column": "line_total",
+              "min": 0,
+              "severity": "critical"
+            },
+            {
+              "type": "cross_field",
+              "function": "line_total_matches_calculation",
+              "columns": [
+                "quantity",
+                "unit_price",
+                "line_total"
+              ],
+              "tolerance": 0.011,
+              "severity": "warning"
+            }
+          ],
+          "auto_fixes": [
+            "fix_quantity_sign_flipped",
+            "fix_quantity_tenfold",
+            "fix_quantity_zero",
+            "fix_unit_price_sign_flipped",
+            "fix_line_total_recalc"
+          ]
+        }
+      },
+      "ai_analysis": {
+        "enabled": true,
+        "provider": "lmstudio",
+        "run_after_predefined": true,
+        "sample_size": 50,
+        "details": "This is a dirty e-commerce dataset with planted defects. Focus on finding plausible-but-wrong values that look valid on their own but fail cross-field checks. Key issues include: placeholder text (N/A, UNKNOWN, ERROR), sentinel dates (1900-01-01, 2099-12-31), negative values, zero values, tenfold values, missing values, and values that look valid but are wrong (wrong city for country, shifted dates, wrong status, mismatched prices).",
+        "prompt_template": "Analyze this dataset for anomalies, suspicious patterns, or data quality issues. Return findings as a JSON list with fields: finding_type, description, severity (info/warning/critical), affected_columns, confidence (high/medium/low)."
+      },
+      "changelog": {
+        "enabled": true,
+        "db_table": "change_log",
+        "json_dir": "logs/changelogs/"
+      },
+      "reporting": {
+        "output_path": "outputs/validation_report.json",
+        "email_on_complete": false,
+        "local_only": true
+      }
+    }
+  ]
+}
